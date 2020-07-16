@@ -1,4 +1,5 @@
 import IPokemon from "../../interfaces/IPokemon";
+import store from "../store";
 
 enum ActionTypes {
     SET_POKEMON = "POKEMON_BUNDLE_SET_POKEMON"
@@ -42,11 +43,15 @@ export function getDefault(): IPokemonState {
     }
 }
 
-export default function reducer(state: IPokemonState, action: Action): IPokemonState {
+export function getState(): IPokemonState {
+    return store.getState().pokemonState;
+}
+
+export default function reducer(state: IPokemonState = getDefault(), action: Action): IPokemonState {
     switch (action.type) {
         case ActionTypes.SET_POKEMON:
             return setPokemonAction(state, action)
         default:
-            return state
+            return state;
     }
 }
