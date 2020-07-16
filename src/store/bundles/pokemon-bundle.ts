@@ -1,5 +1,4 @@
 import IPokemon from "../../interfaces/IPokemon";
-import IState from "../state";
 
 enum ActionTypes {
     SET_POKEMON = "POKEMON_BUNDLE_SET_POKEMON"
@@ -29,7 +28,7 @@ export const actionCreators = {
 }
 
 // Sub-Reducers
-function setPokemonAction(state: IPokemonState, action: Action): IPokemonState {
+function setPokemonAction(state: IPokemonState = getDefault(), action: Action): IPokemonState {
     return {
         ...state,
         pokemon: action.pokemon

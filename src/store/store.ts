@@ -1,6 +1,11 @@
+import {
+    createStore,
+    Store
+} from 'redux'
 
-export default configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
-});
+import rootReducer from './root-reducer'
+import IState from './state'
+
+const store: Store<IState> = createStore(rootReducer);
+
+export default store;
