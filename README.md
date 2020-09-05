@@ -44,7 +44,7 @@ IState
 Each bundle contains it's relevant state interface definition, action creators, handlers, and reducer. If you want to extend the application to fetch some additional data from an external source that pertains to 'Cars', then we can simply expand the 'CarBundle' with a new action type, action creator, handler (Sub-Reducer), and implement it in our reducer. At that point, we haven't affected ANY of our other bundles and we can be pretty sure we've not broken anything along the way that may be unrelated.
 
 ## Selectors
-The selectors pattern here is an approach I've introduced to be compatable with Functional Components only; that pattern is unlikely to worth with the old school Class Based Components.
+The selectors pattern here is an approach I've introduced to be compatable with Functional Components only; that pattern is unlikely to work with the old school Class Based Components.
 
 This pattern is effectively a custom React Hook that wraps a 'useStateSelector' hook which is a typed definition of the hook exposed from the Redux package itself.
 
@@ -53,4 +53,4 @@ In here, we can simply target state.pokemonState.pokemon to get our data.
 
 Using this type of pattern means we can also use jest.SpyOn when testing our components to become agnostic of the store and to return any data we feel fit. 
 
-In comparison to the old-school connect pattern, this is far simpler and cleaner.
+In comparison to the old school connect pattern, this is far simpler and cleaner.
