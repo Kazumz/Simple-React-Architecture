@@ -1,44 +1,56 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I put this project together to demonstrate a simple pattern for retrieving data from an external source and making said data available in a Redux bundle for React components to consume.
 
-## Available Scripts
+## Description of Architecture
+I'll attempt to describe the flow of the example starting with a React component.
 
-In the project directory, you can run:
+Get Data Flow:
+App.tsx > Model > Data Services > External Source (Async Request)
 
-### `yarn start`
+Retrieve Data Flow:
+External Source (Async Response) > Data Service > Model > PokemonBundle > App.tsx (Selector)
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Components
+#### App.tsx
+To keep things simple, I created the example solution using Create-React-App with TypeScript. I've avoided creating new components in this solution and have simply repurposed the App.tsx component to call 'loadPokemon'. This 'loadPokemon' function exists in a 'model' and makes our pokemon data available to us to select via the 'GetPokemon' selector.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Here I simply render out the result of the 'GetPokemon' selector to prove that it works.
 
-### `yarn test`
+## Models
+A model is a concept where we can implement generic behind-the-scenes logic for fetching data from an external source and doing something with it. Ofcourse, we can also use the model for other things apart from fetching data via the data services; it is mearly a layer of abstraction to keep components clean.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+In my example here, I have a function that can be called from anywhere that calls a data service. When the data service responds via a Promise we push the pokemon data returned in to the Redux 'PokemonBundle' which is a state slice I've created to hold said data.
 
-### `yarn build`
+As a further example of keeping things generic, I could reuse the 'loadPokemon' function in the example model in many different components, it is agnostic of where it is used and does not rely on it's consumer.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+I considered a thunk approach here, but I think this is far simpler and allows us to be completely disconnected from relying on Redux where we can simply expose 'dispatch' to the application via a module.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Data Services
+A data service is a concept where we can implement specific data requests. A data service function will know the endpoint it needs to use, the verb and may take in a number of params to construct a body - it will then typically forward on the request to a generic http-utils over fetch API (or axios etc) module to perform the data retrieval. 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+In the example here, I simply resolve a promise with some example data to keep it simple.
 
-### `yarn eject`
+## Redux Bundle
+The Redux pattern applied here is inspired a little bit by the 'Ducks' Redux pattern, but has some differences.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+What I found using the typical Redux approach is that lots of files are merged together with very little seperation and in some cases, too much seperation.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+A bundle is a concept that contains all of the logic relating to a particular state slice. For example, rather than having one massive State object, we now break them down in to logical slices. As a further example, an application may have a 'CarBundle', 'BicycleBundle', 'BoatBundle' and would be represented like so in State:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+IState
+> ICarState;
+> IBicycleState;
+> IBoatState.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Each bundle contains it's relevant state interface definition, action creators, handlers, and reducer. If you want to extend the application to fetch some additional data from an external source that pertains to 'Cars', then we can simply expand the 'CarBundle' with a new action type, action creator, handler (Sub-Reducer), and implement it in our reducer. At that point, we haven't affected ANY of our other bundles and we can be pretty sure we've not broken anything along the way that may be unrelated.
 
-## Learn More
+## Selectors
+The selectors pattern here is an approach I've introduced to be compatable with Functional Components only; that pattern is unlikely to worth with the old school Class Based Components.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This pattern is effectively a custom React Hook that wraps a 'useStateSelector' hook which is a typed definition of the hook exposed from the Redux package itself.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Component > Selectors (GetPokemon) > UseStateSelector.
+In here, we can simply target state.pokemonState.pokemon to get our data.
+
+Using this type of pattern means we can also use jest.SpyOn when testing our components to become agnostic of the store and to return any data we feel fit. 
+
+In comparison to the old-school connect pattern, this is far simpler and cleaner.
