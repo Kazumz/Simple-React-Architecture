@@ -6,7 +6,7 @@ I'll attempt to describe the flow of the example starting with a React component
 Get Data Flow:
 App.tsx > Model > Data Services > External Source (Async Request)
 
-Retrieve Data Flow:
+Response Data Flow:
 External Source (Async Response) > Data Service > Model > PokemonBundle > App.tsx (Selector)
 
 ### Components
