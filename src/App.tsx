@@ -4,26 +4,15 @@ import logo from './logo.svg';
 import './App.css';
 
 import { loadPokemon } from './models/pokemon-model';
-import { connect } from 'react-redux';
 import IPokemon from './interfaces/IPokemon';
-import IState from './store/state';
-import { AnyAction } from 'redux';
-import { getPokemon } from './store/bundles/selectors';
+import { GetPokemon } from './store/bundles/selectors';
 
-interface IOwnProps {
+interface IAppProps {
 }
-
-interface IMapProps {
-  pokemon: ReadonlyArray<IPokemon>;
-}
-
-interface IDispatchProps {
-  dispatch: (action: AnyAction) => AnyAction;
-}
-
-type IAppProps = IOwnProps & IMapProps & IDispatchProps;
 
 const App: React.FC<IAppProps> = (props) => {
+  const pokemon: ReadonlyArray<IPokemon> = GetPokemon();
+
   React.useEffect(
     () => {
       loadPokemon();
@@ -39,7 +28,7 @@ const App: React.FC<IAppProps> = (props) => {
           React Redux with models, data services, and selectors example
         </p>
         <p>
-          {props.pokemon.map(x => {
+          {pokemon.map(x => {
             return <p>{x.name}</p>;
           })}
         </p>
@@ -56,10 +45,4 @@ const App: React.FC<IAppProps> = (props) => {
   );
 }
 
-function mapStateToProps(state: IState, props: IOwnProps): IMapProps {
-  return {
-    pokemon: getPokemon(state.pokemonState)
-  }
-}
-
-export default connect<IMapProps, {}, IOwnProps, IState>(mapStateToProps)(App);
+export default App;

@@ -1,9 +1,5 @@
-import {
-    IPokemonState,
-    getState
-} from "./pokemon-bundle";
 import IPokemon from "../../interfaces/IPokemon";
 
-export function getPokemon(state: IPokemonState = getState()): ReadonlyArray<IPokemon> {
-    return state.pokemon;
-}
+import { useStateSelector } from '../useStateSelector';
+
+export const GetPokemon = (): ReadonlyArray<IPokemon> => useStateSelector(state => state.pokemonState.pokemon);
