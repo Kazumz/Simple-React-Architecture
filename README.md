@@ -1,3 +1,4 @@
+# Overview
 I put this project together to demonstrate a simple pattern for retrieving data from an external source and making said data available in a Redux bundle for React components to consume.
 
 ## Description of Architecture
